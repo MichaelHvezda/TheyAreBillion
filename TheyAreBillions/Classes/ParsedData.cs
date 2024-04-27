@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TheyAreBillions.Classes
 {
-    public class ParsedData
+    public struct ParsedData
     {
         public ParsedData()
         {
@@ -19,7 +19,7 @@ namespace TheyAreBillions.Classes
             Temperature = temperature;
         }
 
-        public string Station { get; set; }
-        public double Temperature { get; set; }
+        public string Station { get; }
+        public double Temperature { get; }
     }
 }
