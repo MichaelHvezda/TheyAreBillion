@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection.PortableExecutable;
 using TheyAreBillions;
 using TheyAreBillions.Classes;
 
@@ -8,7 +9,7 @@ Console.WriteLine("Hello, World!");
 
 Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
 
-var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../data/measurements.txt");
+var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../generator/data/measurements.txt");
 
 Console.WriteLine(path);
 Console.WriteLine(File.Exists(path));
@@ -23,20 +24,25 @@ var readed = ReadRows(file);
 
 var parsed = ProccessRows(readed);
 
-var enumeratorParsed = parsed.GetEnumerator();
-while (enumeratorParsed.MoveNext())
+foreach (var row in parsed)
 {
-    Consts.AddedLineNumber++;
-    if (Consts.AddedLineNumber % 10_000_000 == 0)
-    {
-        Console.WriteLine("read" + Consts.AddedLineNumber);
-    }
-    var row = enumeratorParsed.Current;
     wetherStations.CreateOrAddToExist(row.Station, row.Temperature);
 }
+
+//var enumeratorParsed = parsed.GetEnumerator();
+//while (enumeratorParsed.MoveNext())
+//{
+//    Consts.AddedLineNumber++;
+//    if (Consts.AddedLineNumber % 10_000_000 == 0)
+//    {
+//        Console.WriteLine("read" + Consts.AddedLineNumber);
+//    }
+//    var row = enumeratorParsed.Current;
+//    wetherStations.CreateOrAddToExist(row.Station, row.Temperature);
+//}
 wetherStations.WroteAll();
 stopwatch.Stop();
-Console.WriteLine(stopwatch.ElapsedMilliseconds);
+Console.WriteLine(stopwatch.ElapsedMilliseconds / 1_000);
 Console.WriteLine("ende");
 
 static ParsedData ParsedData(string? data)
@@ -44,6 +50,10 @@ static ParsedData ParsedData(string? data)
     string[] strings = data!.Split(';');
 
     var num = double.Parse(strings[1], CultureInfo.InvariantCulture);
+    //if (num == 99.9 || num == -99.9)
+    //{
+    //    Console.WriteLine(strings[0]);
+    //}
 
     return new ParsedData(strings[0], num);
 }
@@ -54,13 +64,13 @@ static IEnumerable<string> ReadRows(StreamReader reader)
     {
         var line = reader.ReadLine();
         Consts.ReadLineNumber++;
-        if (Consts.ReadLineNumber % 10_000_000 == 0)
+        if (Consts.ReadLineNumber % 1_000_000 == 0)
         {
             Console.WriteLine("read" + Consts.ReadLineNumber);
         }
-        //if (Consts.LineNumber % 10_000_000 == 0)
+        //if (Consts.ReadLineNumber % 100_000_000 == 0)
         //{
-        //    Console.WriteLine(Consts.LineNumber);
+        //    //Console.WriteLine(Consts.LineNumber);
         //    break;
         //}
 
@@ -73,16 +83,22 @@ static IEnumerable<string> ReadRows(StreamReader reader)
 
 static IEnumerable<ParsedData> ProccessRows(IEnumerable<string> reader)
 {
-    var enumeratorReaded = reader.GetEnumerator();
-    while (enumeratorReaded.MoveNext())
+    foreach (var row in reader)
     {
-        Consts.ParseLineNumber++;
-        if (Consts.ParseLineNumber % 10_000_000 == 0)
-        {
-            Console.WriteLine("preces" + Consts.ParseLineNumber);
-        }
-        //var row = enumerator.Current;
-        yield return ParsedData(enumeratorReaded.Current);
-        //wetherStations.CreateOrAddToExist(row.Station, row.Temperature);
+        yield return ParsedData(row);
     }
+
+
+    //var enumeratorReaded = reader.GetEnumerator();
+    //while (enumeratorReaded.MoveNext())
+    //{
+    //    Consts.ParseLineNumber++;
+    //    if (Consts.ParseLineNumber % 10_000_000 == 0)
+    //    {
+    //        Console.WriteLine("preces" + Consts.ParseLineNumber);
+    //    }
+    //    //var row = enumerator.Current;
+    //    yield return ParsedData(enumeratorReaded.Current);
+    //    //wetherStations.CreateOrAddToExist(row.Station, row.Temperature);
+    //}
 }

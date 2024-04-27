@@ -30,28 +30,4 @@ namespace TheyAreBillions.Classes
         public int Count { get; set; }
 
     }
-
-    public static class WetherExtension
-    {
-        public static void CreateOrAddToExist(this IDictionary<string, WetherStation> dict, string key, double value)
-        {
-            key ??= string.Empty;
-
-            if (!dict.TryGetValue(key, out WetherStation val))
-            {
-                val = new WetherStation();
-                dict.Add(key, val);
-            }
-            val.AddData(value);
-        }
-
-        public static void WroteAll(this IDictionary<string, WetherStation> dict)
-        {
-            var ordered = dict.OrderBy(p => p.Key);
-            foreach (var kvp in ordered)
-            {
-                Console.WriteLine($"{kvp.Key} - Min: {kvp.Value.Min}, Max: {kvp.Value.Max}, Mean: {kvp.Value.Sum / kvp.Value.Count: #:0}, Count: {kvp.Value.Count}");
-            }
-        }
-    }
 }

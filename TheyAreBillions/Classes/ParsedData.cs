@@ -22,16 +22,4 @@ namespace TheyAreBillions.Classes
         public string Station { get; set; }
         public double Temperature { get; set; }
     }
-
-    public static class ParsedDataExtension
-    {
-        public static void ParsedData(this ParsedData parsed, string? data)
-        {
-            string[] strings = data!.Split(';');
-
-            var num = double.Parse(strings[1], CultureInfo.InvariantCulture);
-            parsed.Station = strings[0];
-            parsed.Temperature = num;
-        }
-    }
 }
